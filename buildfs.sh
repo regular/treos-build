@@ -159,7 +159,8 @@ make_efiboot_image () {
       echo "${d}" | sudo tee -a "$efiboot/datapart_dirs"
     done
   fi
-  treos-create-meta | sudo tee "$efiboot/treos-issue.json"
+  treos-create-meta --format=ssb | sudo tee "$efiboot/treos-issue.json"
+  treos-create-meta --include-paths > treos-issue.json
   sudo umount -d "$efiboot"
   mkdir -p build/EFI
   sudo cp "$tmp/efiboot.img" "build/EFI"
