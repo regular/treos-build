@@ -1,0 +1,30 @@
+iso_label=
+iso_application=
+iso_publisher=
+
+encrypt_root_fs=0     # 0 or 1
+cowspace_size=2G      # 0 or size of persistent overlay filesystem
+
+datapart_size=512M    # 0 or size of persistent data partition
+datapart_dirs=(
+  '/var/ssb-pacman'
+  '/var/log'
+)
+
+packages=(
+  'auto-dhcp'
+  'hardened-ssh'
+  'passwordless-wheel-sudo'
+  'random-root-password'
+  'kiosk-initcpio'
+  'local-admin'
+  'minimal-desktop-environment'
+)
+
+enable-services () {
+  enable-service sshd.service
+  enable-service systemd-networkd.service
+  enable-service systemd-resolved.service
+  enable-service systemd-timesyncd.service
+}
+
