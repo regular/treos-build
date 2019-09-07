@@ -6,6 +6,7 @@ root=root
 bin="$HOME/.ssb-pacman/node_modules/ssb-pacman/bin"
 sudo echo "thanks" # so sudo will not prompt soon
 source ./config
+get-config
 
 ssb-pacman () {
   local cmd=$1
@@ -41,7 +42,7 @@ copy_efi_files() {
   sudo cp "$efitools/efi/HashTool.efi" "$EFI/boot/"
   sudo cp "$root/usr/lib/systemd/boot/efi/systemd-bootx64.efi" \
     "$EFI/boot/loader.efi"
-  sudo cp -r loader "$root/boot/"
+  sudo cp -r build/loader "$root/boot/"
 }
 
 makeLUKSContainer () {
@@ -132,8 +133,8 @@ EOF
 make_efiboot_image () {
   local payload=$1
 
-  # we allocate 150MB plus the size of the payload
-  local size=$(( 150 + $(du --block-size=1M "$payload"|cut -f1) ))
+  # we allocate 500MB plus the size of the payload
+  local size=$(( 500 + $(du --block-size=1M "$payload"|cut -f1) ))
   local tmp=$(mktemp -d)
   truncate -s ${size}M "$tmp/efiboot.img"
   mkfs.fat -i "$(echo "${efi_volume_id}"|tr -d '-')" -n "$iso_label" "$tmp/efiboot.img"
@@ -143,7 +144,7 @@ make_efiboot_image () {
   sudo mkdir -p "$efiboot/EFI"
   sudo cp -v "$root"/boot/{kiosk-initramfs.img,intel-ucode.img,vmlinuz-linux} "$efiboot"
   sudo cp -rv "$root/boot/EFI/boot" "$efiboot/EFI"
-  sudo cp -rv "loader" "$efiboot"
+  sudo cp -rv "build/loader" "$efiboot"
   sudo mkdir -p "$efiboot/arch/x86_64"
   sudo cp "$payload" "$efiboot"
   if [[ -v cowspace_uuid ]]; then
@@ -182,7 +183,7 @@ make_iso () {
     -volid "${iso_label}"
     -appid "${iso_application}"
     -publisher "${iso_publisher}"
-    -preparer "prepared by ssb-archiso"
+    -preparer "prepared by treos-build"
   )
 
   if [[ -v cowspace_uuid ]]; then
