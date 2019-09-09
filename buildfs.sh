@@ -161,6 +161,7 @@ make_efiboot_image () {
     done
   fi
   treos-create-meta --format=ssb | sudo tee "$efiboot/treos-issue.json"
+  sudo tre-deployment-find "$efiboot/treos-issue.json" --type system --write-back
   treos-create-meta --include-paths > treos-issue.json
   sudo umount -d "$efiboot"
   mkdir -p build/EFI
